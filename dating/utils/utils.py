@@ -1,6 +1,13 @@
+import logging
+import traceback
+from typing import List
+
 import slugify
 import django.utils.text
 from PIL import Image
+from django.core.mail import send_mail
+
+logger = logging.getLogger('django')
 
 
 def transliterate(arg):
@@ -36,3 +43,25 @@ def add_watermark_to_image(in_img, out_img, w_mark_img):
     transparent.convert("RGBA")
     # transparent.show() # For testing.
     transparent.save(out_img, 'png')
+
+
+def send_email(
+        subject: str,
+        message: str,
+        from_email: str,
+        recipients: List[str]
+) -> int:
+    """Sends an email."""
+
+    result = 0
+    try:
+        result = send_mail(
+            subject,
+            message,
+            from_email,
+            recipients
+        )
+    except Exception:
+        logger.error(traceback.format_exc())
+    finally:
+        return result

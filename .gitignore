@@ -1,6 +1,9 @@
 .pytest_cache
 __pycache__
 /.idea
+/htmlcov
+!htmlcov/.htaccess
 uploads/
 !uploads/avatars/no-photo.png
 /.coverage
+*.log

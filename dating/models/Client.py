@@ -3,13 +3,14 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from base import settings
-from dating.utils.utils import get_upload_to, add_watermark_to_image
+from dating.utils.utils import get_upload_to
+from dating.utils.utils import add_watermark_to_image
 
 
 class Client(models.Model):
     """Client."""
 
-    __orig = None
+    __orig_avatar = None
     upload_dir = 'avatars/'
 
     id = models.AutoField(
@@ -48,9 +49,23 @@ class Client(models.Model):
         verbose_name='файл аватара'
     )
 
+    coord_x = models.FloatField(
+        blank=True,
+        default=None,
+        null=True,
+        verbose_name='долгота'
+    )
+
+    coord_y = models.FloatField(
+        blank=True,
+        default=None,
+        null=True,
+        verbose_name='широта'
+    )
+
     def __init__(self, *args, **kwargs):
         super(Client, self).__init__(*args, **kwargs)
-        self.__orig = self.avatar.name
+        self.__orig_avatar = getattr(self.avatar, 'name', None)
 
     def image_tag(self):
         return format_html(
@@ -69,12 +84,11 @@ class Client(models.Model):
             using=None,
             update_fields=None
     ):
-        is_avatar_changed = self.avatar.name != self.__orig
-
+        is_avatar_changed = self.avatar.name != self.__orig_avatar
         super(Client, self).save(
             force_insert, force_update, using, update_fields
         )
-        self.__orig = self.avatar.name
+        self.__orig_avatar = self.avatar.name
         if is_avatar_changed:
             watermark = settings.STATIC_ROOT + '/watermark.png'
             add_watermark_to_image(
@@ -86,7 +100,13 @@ class Client(models.Model):
     def to_dict(self):
         d = {}
         for field in self._meta.get_fields(include_hidden=True):
-            d[field.name] = self.__getattribute__(field.name).__str__()
+            val = getattr(self, field.name, False)
+            if val is not False:
+                if type(val).__name__ not in [
+                    'int', 'float', 'str', 'NoneType'
+                ]:
+                    val = val.__str__()
+                d[field.name] = val
         return d
 
     def __str__(self):
@@ -99,6 +119,7 @@ class Client(models.Model):
         s += ' email: ' + self.email.__str__()
         s += ' gender: ' + self.gender.__str__()
         s += ' avatar: ' + self.avatar.__str__()
+        s += ' }'
         return s
 
     class Meta:

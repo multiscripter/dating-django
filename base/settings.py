@@ -82,6 +82,9 @@ DATABASES = {
         'PASSWORD': 'postgresrootpass',
         'HOST': '127.0.0.1',
         'PORT': '5432',
+        'TEST': {
+            'NAME': 'dating_django_test',
+        },
     }
 }
 
@@ -132,3 +135,45 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = 'uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads/')
+
+LOG_DIR = os.path.join(BASE_DIR, 'log/')
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(levelname)s %(module)s %(filename)s %(message)s'
+        },
+        'message': {
+            'format': '%(asctime)s %(message)s'
+        }
+    },
+    'handlers': {
+        'file-common': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIR + 'dating-common.log',
+            'maxBytes': 1024*1024,
+            'formatter': 'verbose'
+        },
+        'file-db': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIR + 'dating-db.log',
+            'maxBytes': 1024*1024,
+            'formatter': 'message'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file-common'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['file-db'],
+            'level': 'DEBUG',
+            'propagate': False
+        }
+    },
+}

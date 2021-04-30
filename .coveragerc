@@ -1,0 +1,9 @@
+[run]
+source =
+    ./dating/controllers/
+    ./dating/models/
+    ./dating/services/
+    ./dating/utils/
+
+omit =
+    */__init__.py
