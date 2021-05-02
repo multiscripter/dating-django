@@ -118,7 +118,8 @@ class TestClientService(TestCase):
         expected = {
             'data': None,
             'errors': {
-                'service': "The 'avatar' attribute has no file associated with it."
+                'ClientService.create':
+                    "The 'avatar' attribute has no file associated with it."
             }
         }
         self.assertEqual(expected, actual)
@@ -173,7 +174,7 @@ class TestClientService(TestCase):
         mocked.side_effect = Exception(error_message)
         expected = {
             'data': [],
-            'errors': {'service': 'Custom exception message'}
+            'errors': {'ClientService.read': error_message}
         }
 
         self.get_request.GET['gender'] = 'fake value'

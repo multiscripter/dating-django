@@ -1,9 +1,8 @@
-import psycopg2
 from unittest.mock import patch
 
+from django.http import HttpRequest, QueryDict
 from django.test import TestCase
 
-from base import settings
 from dating.models.Client import Client
 from dating.models.Match import Match
 from dating.services.MatchService import MatchService
@@ -11,67 +10,45 @@ from dating.services.MatchService import MatchService
 
 # Run TestClient from project root using unittests:
 # python manage.py test dating.tests.services.testMatchService
-from dating.tests.DBDriver import DBDriver
 
 
 class TestMatchService(TestCase):
     """Tests class ClientService."""
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestMatchService, cls).setUpClass()
-        db_params = {
-            'database': settings.DATABASES['default']['TEST']['NAME'],
-            'host': settings.DATABASES['default']['HOST'],
-            'password': settings.DATABASES['default']['PASSWORD'],
-            'port': settings.DATABASES['default']['PORT'],
-            'user': settings.DATABASES['default']['USER']
-        }
-        cls.db_driver = DBDriver(psycopg2, db_params)
-
     def setUp(self):
         """Actions before each test."""
 
         self.service = MatchService()
-        self.data = [
-            {
-                'first_name': 'Foo',
-                'last_name': 'Bar',
-                'email': 'foo@mail.ru',
+        self.data = []
+        self.clients = []
+        for a in range(4):
+            self.data.append({
+                'first_name': f'Foo-{a}',
+                'last_name': f'Bar-{a}',
+                'email': f'foo-{a}@mail.ru',
                 'gender': Client.Gender.MALE.value,
                 'avatar': 'avatars/no-photo.png'
-            },
-            {
-                'first_name': 'Jane',
-                'last_name': 'Dow',
-                'email': 'JaneDow@gmail.ru',
-                'gender': Client.Gender.FEMALE.value,
-                'avatar': 'avatars/no-photo.png'
-            }
-        ]
-        self.clients = []
-        for a in self.data:
-            client = Client(**a)
+            })
+            client = Client(**self.data[a])
             client.save()
             self.clients.append(client)
+        self.match = Match()
+        self.match.from_id = self.clients[2]
+        self.match.to_id = self.clients[3]
+        self.match.save()
 
-    def tearDown(self):
-        """Actions after each test."""
-
-        # query = 'delete from ' + Client._meta.db_table
-        # self.db_driver.delete(query)
-        self.db_driver.close()
+        self.post_request = HttpRequest()
+        self.post_request.POST = QueryDict().copy()
+        self.post_request.POST['id'] = self.clients[1].id
 
     def test_create_success(self):
         """Tests create(self, params: Dict) -> Dict
         Success."""
 
-        params = {
-            'from_id': self.clients[0],
-            'to_id': self.clients[1]
-        }
-        actual = self.service.create(params)
-        match = Match.objects.all()[0]
+        actual = self.service.create(self.post_request, self.clients[0].id)
+        match = Match.objects.filter(
+            from_id=self.clients[0], to_id=self.clients[1]
+        )[0]
         expected = {
             'data': match,
             'errors': {},
@@ -88,9 +65,62 @@ class TestMatchService(TestCase):
         mocked.side_effect = Exception(error_message)
         expected = {
             'data': None,
-            'errors': {'service': 'Custom exception message'},
+            'errors': {'MatchService.create': 'Custom exception message'},
             'is_created': None
         }
 
-        actual = self.service.create({})
+        actual = self.service.create(self.post_request, self.clients[0].id)
+        self.assertEqual(expected, actual)
+
+    def test_read_success(self):
+        """Tests read(self, params: Dict) -> Dict
+        Success."""
+
+        expected = {
+            'data': [self.match.to_dict()],
+            'errors': {}
+        }
+        self.post_request.POST['id'] = self.clients[2].id
+        actual = self.service.read(self.post_request, self.clients[3].id)
+        actual['data'] = [m.to_dict() for m in actual['data']]
+        self.assertEqual(expected, actual)
+
+    @patch('django.db.models.query.QuerySet.all')
+    def test_read_exception(self, mocked):
+        """Tests read(self, request) -> Dict.
+        Throws an exception."""
+
+        error_message = 'Custom exception message'
+        mocked.side_effect = Exception(error_message)
+        expected = {
+            'data': [],
+            'errors': {'MatchService.read': error_message}
+        }
+
+        actual = self.service.read(self.post_request, self.clients[3].id)
+        self.assertEqual(expected, actual)
+
+    def test_update_success(self):
+        """Tests update(self, match: Match, params: Dict) -> Dict
+        Success."""
+
+        expected = {
+            'data': self.match,
+            'errors': {}
+        }
+        actual = self.service.update(self.match, {'is_mutually': True})
+        self.assertEqual(expected, actual)
+
+    @patch('django.db.models.base.Model.save')
+    def test_update_exception(self, mocked):
+        """Tests update(self, match: Match, params: Dict) -> Dict
+        Throws an exception."""
+
+        error_message = 'Custom exception message'
+        mocked.side_effect = Exception(error_message)
+        expected = {
+            'data': None,
+            'errors': {'MatchService.update': error_message}
+        }
+        actual = self.service.update(self.match, {'is_mutually': True})
         self.assertEqual(expected, actual)

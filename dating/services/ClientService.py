@@ -2,6 +2,8 @@ import logging
 import traceback
 from typing import Dict
 
+from django.http import HttpRequest
+
 from dating.models.Client import Client
 
 
@@ -11,8 +13,12 @@ class ClientService:
     def __init__(self):
         self.logger = logging.getLogger('django')
 
-    def create(self, request) -> Dict:
-        """Creates a client."""
+    def create(self, request: HttpRequest) -> Dict:
+        """
+        Creates a client.
+        :param request: HTTP request object.
+        :return: result.
+        """
 
         result = {
             'data': None,
@@ -29,12 +35,16 @@ class ClientService:
             result['data'] = client
         except Exception as ex:
             self.logger.error(traceback.format_exc())
-            result['errors'] = {'service': ex.__str__()}
+            result['errors'] = {'ClientService.create': ex.__str__()}
         finally:
             return result
 
-    def read(self, request) -> Dict:
-        """Gets client list."""
+    def read(self, request: HttpRequest) -> Dict:
+        """
+        Gets client list.
+        :param request: HTTP request object.
+        :return: result.
+        """
 
         result = {
             'data': [],
@@ -53,6 +63,6 @@ class ClientService:
                     result['data'].append(c.to_dict())
         except Exception as ex:
             self.logger.error(traceback.format_exc())
-            result['errors'] = {'service': ex.__str__()}
+            result['errors'] = {'ClientService.read': ex.__str__()}
         finally:
             return result

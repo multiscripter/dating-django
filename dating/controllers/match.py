@@ -1,9 +1,7 @@
-from django.http import HttpResponse, JsonResponse
-from django.http import HttpResponseNotModified
 from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseNotModified
+from django.http import JsonResponse
 
-from dating.models.Client import Client
-from dating.models.Match import Match
 from dating.services.MatchService import MatchService
 
 
@@ -11,8 +9,7 @@ def create(request, from_id):
     if request.method == 'POST':
         # TODO: add POST data validation.
         service = MatchService()
-        params = {'to_id': from_id, 'from_id': request.POST['id']}
-        result = service.read(params)
+        result = service.read(request, from_id)
         if len(result['data']):
             if not result['data'][0].is_mutually:
                 u_result = service.update(
@@ -26,11 +23,7 @@ def create(request, from_id):
             else:
                 return HttpResponseNotModified()
         else:
-            params = {
-                'from_id': Client.objects.get(id=from_id),
-                'to_id': Client.objects.get(id=request.POST['id'])
-            }
-            result = service.create(params)
+            result = service.create(request, from_id)
             if result['errors']:
                 return JsonResponse(result, status=400)
             elif result['is_created']:

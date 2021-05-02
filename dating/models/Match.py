@@ -1,7 +1,7 @@
 from django.db import models
 
 from dating.models.Client import Client
-from dating.utils.utils import send_email
+from dating.utils.Mailer import Mailer
 
 
 class Match(models.Model):
@@ -30,6 +30,7 @@ class Match(models.Model):
     def __init__(self, *args, **kwargs):
         super(Match, self).__init__(*args, **kwargs)
         self.__orig_mutual = getattr(self.is_mutually, 'name', False)
+        self.mailer = Mailer()
 
     def save(
             self,
@@ -60,7 +61,7 @@ class Match(models.Model):
                 msg = 'Вы понравились {0}! Почта участника: {1}'.format(
                     client[0], client[1]
                 )
-                send_email('Совпадение', msg, client[1], [client[2]])
+                self.mailer.send('Совпадение', msg, client[1], [client[2]])
 
     def to_dict(self):
         d = {}
