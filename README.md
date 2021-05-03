@@ -29,3 +29,9 @@ https://en.wikipedia.org/wiki/Great-circle_distance
 3. Распарсить любой сайт знакомств или социальную сеть на участников 
 и перенести их к себе в базу. Использование прокси приветствуется.
 ```
+
+```
+docker-compose build
+docker-compose up -d
+python manage.py runserver
+```
