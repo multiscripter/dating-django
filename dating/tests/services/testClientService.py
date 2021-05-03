@@ -132,15 +132,16 @@ class TestClientService(TestCase):
 
         expected = {
             'data': [
-                {'id': self.data[1]['id'],
-                 'first_name': self.data[1]['first_name'],
-                 'last_name': self.data[1]['last_name'],
-                 'email': self.data[1]['email'],
-                 'gender': self.data[1]['gender'],
-                 'avatar': self.data[1]['avatar'],
-                 'coord_x': None,
-                 'coord_y': None
-                 }
+                Client(**{
+                    'id': self.data[1]['id'],
+                    'first_name': self.data[1]['first_name'],
+                    'last_name': self.data[1]['last_name'],
+                    'email': self.data[1]['email'],
+                    'gender': self.data[1]['gender'],
+                    'avatar': self.data[1]['avatar'],
+                    'coord_x': None,
+                    'coord_y': None
+                })
             ],
             'errors': {}
         }
@@ -150,7 +151,7 @@ class TestClientService(TestCase):
 
     def test_read_with_params_success(self):
         """Tests read(self, request) -> Dict.
-        request.GET['email']
+        request.GET['first_name']
         Success."""
 
         query = 'select * from ' + Client._meta.db_table
@@ -159,7 +160,7 @@ class TestClientService(TestCase):
         )
         result = self.db_driver.select(query)
         expected = {
-            'data': result,
+            'data': [Client(**result[0])],
             'errors': {}
         }
 
@@ -167,7 +168,7 @@ class TestClientService(TestCase):
         actual = self.service.read(self.get_request)
         self.assertEqual(expected, actual)
 
-    @patch('django.db.models.query.QuerySet.all')
+    @patch('django.db.models.query.QuerySet.filter')
     def test_read_exception(self, mocked):
         """Tests read(self, request) -> Dict.
         Throws an exception."""

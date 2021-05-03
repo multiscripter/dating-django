@@ -50,6 +50,7 @@ class Client(models.Model):
         verbose_name='файл аватара'
     )
 
+    # longitude.
     coord_x = models.FloatField(
         blank=True,
         default=None,
@@ -57,6 +58,7 @@ class Client(models.Model):
         verbose_name='долгота'
     )
 
+    # latitude.
     coord_y = models.FloatField(
         blank=True,
         default=None,

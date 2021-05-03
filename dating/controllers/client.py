@@ -26,6 +26,7 @@ def get_list(request):
         if result['errors']:
             return JsonResponse(result, status=400)
         else:
+            result['data'] = [c.to_dict() for c in result['data']]
             return JsonResponse(result)
     else:
         return HttpResponseNotAllowed(['GET'])
