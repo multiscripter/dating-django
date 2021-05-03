@@ -29,7 +29,9 @@ class ClientService:
         client.last_name = request.POST['last_name']
         client.email = request.POST['email']
         client.gender = Client.Gender(request.POST['gender'])
-        client.avatar = request.FILES['avatar']
+        client.avatar = request.FILES['avatar'] \
+            if 'avatar' in request.FILES and request.FILES['avatar'] \
+            else None
         try:
             client.save()
             result['data'] = client

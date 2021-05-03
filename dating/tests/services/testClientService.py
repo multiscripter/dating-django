@@ -74,13 +74,15 @@ class TestClientService(TestCase):
         self.post_request.POST['gender'] = self.data[0]['gender']
 
         self.post_request.FILES = QueryDict().copy()
-        filename = 'Тестовое фото клиента.jpeg'
-        self.upload_to = get_upload_to(Client(), filename)
-        path = settings.MEDIA_ROOT + filename
-        self.post_request.FILES['avatar'] = UploadedFile(
-            file=open(path, 'rb'),
-            name=filename
-        )
+        for filename in ['Тестовое фото клиента.jpeg', 'test-client-foto.jpeg']:
+            self.upload_to = get_upload_to(Client(), filename)
+            path = settings.MEDIA_ROOT + filename
+            if os.path.isfile(path):
+                self.post_request.FILES['avatar'] = UploadedFile(
+                    file=open(path, 'rb'),
+                    name=filename
+                )
+                break
 
         self.get_request = HttpRequest()
         self.get_request.GET = QueryDict().copy()

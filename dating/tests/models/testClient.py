@@ -77,23 +77,25 @@ class TestClient(TestCase):
         Avatar changes.
         """
 
-        filename = 'Тестовое фото клиента.jpeg'
-        upload_to = get_upload_to(self.client, filename)
-        expected = '/{0}{1}'.format(settings.MEDIA_URL, upload_to)
-        path = settings.MEDIA_ROOT + filename
-        with open(path, 'rb') as f:
-            self.client.avatar = UploadedFile(
-                file=f,
-                name=filename
-            )
-            self.client.save()
-            actual = self.client.avatar.url
-            self.assertEqual(expected, actual)
+        for filename in ['Тестовое фото клиента.jpeg', 'test-client-foto.jpeg']:
+            upload_to = get_upload_to(self.client, filename)
+            expected = '/{0}{1}'.format(settings.MEDIA_URL, upload_to)
+            path = settings.MEDIA_ROOT + filename
+            if os.path.isfile(path):
+                with open(path, 'rb') as f:
+                    self.client.avatar = UploadedFile(
+                        file=f,
+                        name=filename
+                    )
+                    self.client.save()
+                    actual = self.client.avatar.url
+                    self.assertEqual(expected, actual)
 
-            # Delete file from production folder after test ends.
-            path = settings.MEDIA_ROOT + upload_to
-            if os.path.exists(path):
-                os.remove(path)
+                    # Delete file from production folder after test ends.
+                    path = settings.MEDIA_ROOT + upload_to
+                    if os.path.isfile(path):
+                        os.remove(path)
+                break
 
     def test_to_dict(self):
         """Tests to_dict(self)."""

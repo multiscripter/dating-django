@@ -44,6 +44,7 @@ class Client(models.Model):
     )
 
     avatar = models.ImageField(
+        blank=True,
         upload_to=get_upload_to,
         default='avatars/no-photo.png',
         verbose_name='файл аватара'
