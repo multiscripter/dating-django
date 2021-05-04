@@ -1,5 +1,6 @@
 [run]
 source =
+    ./chat/services/
     ./dating/controllers/
     ./dating/models/
     ./dating/services/

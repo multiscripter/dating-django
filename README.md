@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/multiscripter/dating-django.svg?branch=master)](https://travis-ci.com/multiscripter/dating-django)
+[![codecov](https://codecov.io/gh/multiscripter/dating-django/branch/master/graph/badge.svg?token=SN2RIT4DJH)](https://codecov.io/gh/multiscripter/dating-django)
+
 **Тестовое задание:**
 ```
 Общая идея: пишем бекэнд для сайта (приложения) знакомств.
