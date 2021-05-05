@@ -7,7 +7,6 @@ from dating.services.MatchService import MatchService
 
 def create(request, from_id):
     if request.method == 'POST':
-        # TODO: add POST data validation.
         service = MatchService()
         result = service.read(request, from_id)
         if len(result['data']):

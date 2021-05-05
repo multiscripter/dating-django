@@ -236,6 +236,40 @@ ALTER SEQUENCE public.auth_user_user_permissions_id_seq OWNED BY public.auth_use
 
 
 --
+-- Name: dating_message; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.dating_message (
+    id integer NOT NULL,
+    text character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.dating_message OWNER TO postgres;
+
+--
+-- Name: dating_message_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.dating_message_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.dating_message_id_seq OWNER TO postgres;
+
+--
+-- Name: dating_message_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.dating_message_id_seq OWNED BY public.dating_message.id;
+
+
+--
 -- Name: django_admin_log; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -476,6 +510,13 @@ ALTER TABLE ONLY public.auth_user_user_permissions ALTER COLUMN id SET DEFAULT n
 
 
 --
+-- Name: dating_message id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.dating_message ALTER COLUMN id SET DEFAULT nextval('public.dating_message_id_seq'::regclass);
+
+
+--
 -- Name: django_admin_log id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -567,6 +608,10 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 34	Can change Совпадение	9	change_match
 35	Can delete Совпадение	9	delete_match
 36	Can view Совпадение	9	view_match
+37	Can add message	10	add_message
+38	Can change message	10	change_message
+39	Can delete message	10	delete_message
+40	Can view message	10	view_message
 \.
 
 
@@ -592,6 +637,32 @@ COPY public.auth_user_groups (id, user_id, group_id) FROM stdin;
 --
 
 COPY public.auth_user_user_permissions (id, user_id, permission_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: dating_message; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.dating_message (id, text) FROM stdin;
+1	ddddddddddd
+2	ffffffffffffffffffff
+3	ghjghj
+4	fghhh
+5	asdasd
+6	asdasd
+7	ffffffffffffff
+8	;khdjkhfkgsdfg
+9	zzzzzzzzzz
+10	99
+11	ddddddddddddddd
+12	ddddddddffffffffff
+13	ffffff
+14	ssssssssssss
+15	ddddddd
+16	fffffffff
+17	sdfsdf
+18	dfgdfgdggg
 \.
 
 
@@ -727,6 +798,7 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 7	dating	user
 8	dating	client
 9	dating	match
+10	dating	message
 \.
 
 
@@ -758,6 +830,9 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 21	dating	0003_alter_user_avatar	2021-04-29 13:45:18.040892+03
 23	dating	0004_auto_20210429_2031	2021-04-29 23:31:21.51598+03
 24	dating	0005_auto_20210430_1025	2021-04-30 13:25:17.940993+03
+25	dating	0006_alter_client_avatar	2021-05-03 15:01:24.467254+03
+26	dating	0007_alter_client_email	2021-05-04 11:37:12.091075+03
+27	dating	0008_message	2021-05-04 11:41:00.797924+03
 \.
 
 
@@ -807,7 +882,7 @@ SELECT pg_catalog.setval('public.auth_group_permissions_id_seq', 1, false);
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.auth_permission_id_seq', 36, true);
+SELECT pg_catalog.setval('public.auth_permission_id_seq', 40, true);
 
 
 --
@@ -832,6 +907,13 @@ SELECT pg_catalog.setval('public.auth_user_user_permissions_id_seq', 1, false);
 
 
 --
+-- Name: dating_message_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.dating_message_id_seq', 18, true);
+
+
+--
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -842,14 +924,14 @@ SELECT pg_catalog.setval('public.django_admin_log_id_seq', 110, true);
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.django_content_type_id_seq', 9, true);
+SELECT pg_catalog.setval('public.django_content_type_id_seq', 10, true);
 
 
 --
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.django_migrations_id_seq', 24, true);
+SELECT pg_catalog.setval('public.django_migrations_id_seq', 27, true);
 
 
 --
@@ -963,6 +1045,14 @@ ALTER TABLE ONLY public.auth_user
 
 
 --
+-- Name: dating_message dating_message_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.dating_message
+    ADD CONSTRAINT dating_message_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: django_admin_log django_admin_log_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1024,6 +1114,14 @@ ALTER TABLE ONLY public.matches
 
 ALTER TABLE ONLY public.matches
     ADD CONSTRAINT matches_to_id_id_key UNIQUE (to_id_id);
+
+
+--
+-- Name: users users_email_0ea73cca_uniq; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_0ea73cca_uniq UNIQUE (email);
 
 
 --
@@ -1123,6 +1221,13 @@ CREATE INDEX django_session_expire_date_a5c62663 ON public.django_session USING 
 --
 
 CREATE INDEX django_session_session_key_c0390e0f_like ON public.django_session USING btree (session_key varchar_pattern_ops);
+
+
+--
+-- Name: users_email_0ea73cca_like; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX users_email_0ea73cca_like ON public.users USING btree (email varchar_pattern_ops);
 
 
 --

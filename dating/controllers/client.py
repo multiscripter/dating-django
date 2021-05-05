@@ -6,7 +6,6 @@ from dating.services.ClientService import ClientService
 
 def create(request):
     if request.method == 'POST':
-        # TODO: add POST data validation.
         service = ClientService()
         result = service.create(request)
         if result['errors']:
@@ -20,7 +19,6 @@ def create(request):
 
 def get_list(request):
     if request.method == 'GET':
-        # TODO: add POST data validation.
         service = ClientService()
         result = service.read(request)
         if result['errors']:

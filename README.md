@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/multiscripter/dating-django/branch/master/graph/badge.svg?token=SN2RIT4DJH)](https://codecov.io/gh/multiscripter/dating-django)
 
 **Тестовое задание:**
-```
+
 Общая идея: пишем бекэнд для сайта (приложения) знакомств.
 
 Основное задание (Junior):
@@ -27,14 +27,19 @@ https://en.wikipedia.org/wiki/Great-circle_distance
 2. Подключить чаты (channels).
 
 Дополнительные задания (чем больше сделаете, тем лучше):
-1. Создать модуль транзакций и подключить эквайринг Сбербанка.
+
+1. ~~Создать модуль транзакций и подключить эквайринг Сбербанка.~~
 2. Написать юнит-тесты для системы.
-3. Распарсить любой сайт знакомств или социальную сеть на участников 
-и перенести их к себе в базу. Использование прокси приветствуется.
-```
+3. ~~Распарсить любой сайт знакомств или социальную сеть на участников 
+и перенести их к себе в базу. Использование прокси приветствуется.~~
+
+**Окружение:**
+
 каркас: **Django 3.2**
 
-база данных: **PostgreSQL 13.2**
+база данных: **PostgreSQL**
+
+хранилище в памяти: **Redis**
 
 тесты: **unittest, pytest**
 
@@ -42,9 +47,13 @@ https://en.wikipedia.org/wiki/Great-circle_distance
 ```
 docker-compose build
 docker-compose up -d
-python manage.py runserver
 ```
-**Запуск:**
+**Адрес проекта:**
 ```
 http://127.0.0.1:8000/
+```
+**Если сервер django не запустился:**
+```
+docker exec -it dating-django bash
+python manage.py runserver
 ```
