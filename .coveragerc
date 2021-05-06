@@ -5,6 +5,8 @@ source =
     ./dating/models/
     ./dating/services/
     ./dating/utils/
+    ./products/models/
+    ./utils/
 
 omit =
     */__init__.py

@@ -236,6 +236,40 @@ ALTER SEQUENCE public.auth_user_user_permissions_id_seq OWNED BY public.auth_use
 
 
 --
+-- Name: categories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.categories (
+    id bigint NOT NULL,
+    name character varying(64) NOT NULL,
+    parent_id bigint
+);
+
+
+ALTER TABLE public.categories OWNER TO postgres;
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.categories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.categories_id_seq OWNER TO postgres;
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
+
+
+--
 -- Name: dating_message; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -429,6 +463,42 @@ ALTER SEQUENCE public.matches_id_seq OWNED BY public.matches.id;
 
 
 --
+-- Name: products; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.products (
+    id bigint NOT NULL,
+    name character varying(128) NOT NULL,
+    price numeric(8,2) NOT NULL,
+    image character varying(100),
+    category_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.products OWNER TO postgres;
+
+--
+-- Name: products_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.products_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.products_id_seq OWNER TO postgres;
+
+--
+-- Name: products_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.products_id_seq OWNED BY public.products.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -510,6 +580,13 @@ ALTER TABLE ONLY public.auth_user_user_permissions ALTER COLUMN id SET DEFAULT n
 
 
 --
+-- Name: categories id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
+
+
+--
 -- Name: dating_message id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -542,6 +619,13 @@ ALTER TABLE ONLY public.django_migrations ALTER COLUMN id SET DEFAULT nextval('p
 --
 
 ALTER TABLE ONLY public.matches ALTER COLUMN id SET DEFAULT nextval('public.matches_id_seq'::regclass);
+
+
+--
+-- Name: products id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.products ALTER COLUMN id SET DEFAULT nextval('public.products_id_seq'::regclass);
 
 
 --
@@ -612,6 +696,14 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 38	Can change message	10	change_message
 39	Can delete message	10	delete_message
 40	Can view message	10	view_message
+41	Can add Товар	11	add_product
+42	Can change Товар	11	change_product
+43	Can delete Товар	11	delete_product
+44	Can view Товар	11	view_product
+45	Can add Категория	12	add_category
+46	Can change Категория	12	change_category
+47	Can delete Категория	12	delete_category
+48	Can view Категория	12	view_category
 \.
 
 
@@ -637,6 +729,17 @@ COPY public.auth_user_groups (id, user_id, group_id) FROM stdin;
 --
 
 COPY public.auth_user_user_permissions (id, user_id, permission_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.categories (id, name, parent_id) FROM stdin;
+1	Строительство и ремонт	\N
+2	Электрика	1
+3	Силовые кабели	2
 \.
 
 
@@ -781,6 +884,29 @@ COPY public.django_admin_log (id, action_time, object_id, object_repr, action_fl
 108	2021-04-30 18:04:32.462891+03	17	Match{ from_id: 20 to_id: 25 is_mutually: True }	3		9	1
 109	2021-04-30 21:57:37.596607+03	18	Match{ from_id: 25 to_id: 20 is_mutually: True }	3		9	1
 110	2021-04-30 21:58:26.865184+03	33	Client{ id: 33 first_name: Маша last_name: Машина email: mashina@mail.ru gender: 2 avatar: avatars/foto-masha-mashina_FcVya59.jpeg }	3		8	1
+111	2021-05-06 10:40:17.708319+03	1	Category object (1)	1	[{"added": {}}]	12	1
+112	2021-05-06 10:42:11.320445+03	2	Category{ id: 2 name: Электрика }	1	[{"added": {}}]	12	1
+113	2021-05-06 10:47:25.263851+03	3	Category{ id: 3 name: Силовые кабели }	1	[{"added": {}}]	12	1
+114	2021-05-06 10:48:43.810048+03	3	Category{ id: 3 name: Силовые кабели }	2	[{"changed": {"fields": ["Parent"]}}]	12	1
+115	2021-05-06 10:52:38.057615+03	1	Product object (1)	1	[{"added": {}}]	11	1
+116	2021-05-06 11:08:09.214756+03	1	Product object (1)	3		11	1
+117	2021-05-06 11:09:30.944905+03	2	Product object (2)	1	[{"added": {}}]	11	1
+118	2021-05-06 11:31:25.073423+03	2	Product object (2)	3		11	1
+119	2021-05-06 11:32:00.223971+03	3	Product object (3)	1	[{"added": {}}]	11	1
+120	2021-05-06 11:32:46.871303+03	3	Product object (3)	3		11	1
+121	2021-05-06 11:34:17.295219+03	4	Product object (4)	1	[{"added": {}}]	11	1
+122	2021-05-06 11:34:23.915891+03	4	Product object (4)	3		11	1
+123	2021-05-06 11:36:04.410833+03	5	Product object (5)	1	[{"added": {}}]	11	1
+124	2021-05-06 11:36:11.261183+03	5	Product object (5)	3		11	1
+125	2021-05-06 11:39:50.550939+03	6	Product object (6)	1	[{"added": {}}]	11	1
+126	2021-05-06 11:44:42.49739+03	6	Product object (6)	3		11	1
+127	2021-05-06 11:46:09.777909+03	7	Product object (7)	1	[{"added": {}}]	11	1
+129	2021-05-06 11:48:12.618728+03	7	Product object (7)	3		11	1
+130	2021-05-06 11:48:42.94731+03	8	Product object (8)	1	[{"added": {}}]	11	1
+132	2021-05-06 11:49:55.852866+03	8	Product object (8)	3		11	1
+133	2021-05-06 11:50:14.016174+03	9	Product object (9)	1	[{"added": {}}]	11	1
+134	2021-05-06 11:50:19.352784+03	9	Product object (9)	3		11	1
+135	2021-05-06 13:46:13.576944+03	10	Product object (10)	1	[{"added": {}}]	11	1
 \.
 
 
@@ -799,6 +925,8 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 8	dating	client
 9	dating	match
 10	dating	message
+11	products	product
+12	products	category
 \.
 
 
@@ -833,6 +961,11 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 25	dating	0006_alter_client_avatar	2021-05-03 15:01:24.467254+03
 26	dating	0007_alter_client_email	2021-05-04 11:37:12.091075+03
 27	dating	0008_message	2021-05-04 11:41:00.797924+03
+28	products	0001_initial	2021-05-06 09:44:17.718054+03
+29	products	0002_auto_20210506_0650	2021-05-06 09:50:43.30153+03
+30	products	0003_alter_product_name	2021-05-06 10:20:36.098423+03
+31	products	0004_alter_product_image	2021-05-06 10:37:19.850798+03
+32	products	0005_alter_product_image	2021-05-06 11:08:39.328761+03
 \.
 
 
@@ -850,6 +983,63 @@ COPY public.django_session (session_key, session_data, expire_date) FROM stdin;
 --
 
 COPY public.matches (id, is_mutually, from_id_id, to_id_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.products (id, name, price, image, category_id) FROM stdin;
+165	Кабель ЭлПроКабель ВВГП-нг(А) LS 3x1.5мм2 50м ГОСТ медь черный	2470.00	products/1394030-v01-m.jpg	3
+166	Провод ЭлПроКабель ПВС 2x2.5мм2 50м ГОСТ медь белый	2340.00	products/1393994-v01-m.jpg	3
+167	Кабель Falcon Eye ВВГП-нг(А) LS 2x2.5мм2 20м ГОСТ медь черный	820.00	products/1366117-v01-m.jpg	3
+168	Кабель Falcon Eye ВВГП-нг(А) LS 3x1.5мм2 50м ГОСТ медь черный	2030.00	products/1366121-v01-m.jpg	3
+169	Кабель ЭлПроКабель ВВГП-НГ 3x2.5мм2 50м ГОСТ медь черный	3790.00	products/1393968-v01-m.jpg	3
+170	Провод ЭлПроКабель ПВС 2x1.5мм2 50м ГОСТ медь белый	1920.00	products/1393983-v01-m.jpg	3
+171	Кабель ЭлПроКабель ВВГП-нг(А) LS 3x2.5мм2 20м ГОСТ медь черный	1580.00	products/1394034-v01-m.jpg	3
+172	Провод ЭлПроКабель ПВС 2x1.5мм2 20м ГОСТ медь белый	810.00	products/1393982-v01-m.jpg	3
+173	Кабель ЭлПроКабель ВВГП-нг(А) LS 3x1.5мм2 10м ГОСТ медь черный	430.00	products/1394077-v01-m.jpg	3
+10	Тестовый товар	999.00	products/dating-product-test-image.jpg	3
+174	Провод ЭлПроКабель ШВВП 2x0.75мм2 20м ГОСТ медь белый	400.00	products/1393971-v01-m.jpg	3
+175	Кабель ЭлПроКабель ВВГП-НГ 2x1.5мм2 50м ГОСТ медь черный	1680.00	products/1393948-v01-m.jpg	3
+176	Кабель ЭлПроКабель ВВГП-НГ 3x1.5мм2 20м ГОСТ медь черный	790.00	products/1393960-v01-m.jpg	3
+177	Провод ЭлПроКабель ПВС 2x2.5мм2 10м ГОСТ медь белый	510.00	products/1394068-v01-m.jpg	3
+178	Провод ЭлПроКабель ПВС 3x0.75мм2 10м ГОСТ медь белый	270.00	products/1394069-v01-m.jpg	3
+179	Провод ЭлПроКабель ШВВП 2x0.75мм2 50м ГОСТ медь белый	940.00	products/1393972-v01-m.jpg	3
+180	Кабель ЭлПроКабель ВВГП-нг(А) LS 2x2.5мм2 10м ГОСТ медь черный	480.00	products/1394076-v01-m.jpg	3
+181	Провод ЭлПроКабель ПВС 3x2.5мм2 20м ГОСТ медь белый	1320.00	products/1394006-v01-m.jpg	3
+182	Кабель ЭлПроКабель NUM-O 2x2.5мм2 20м ГОСТ медь серый	1050.00	products/1394043-v01-m.jpg	3
+183	Кабель Falcon Eye ПВС 2x2.5мм2 100м ГОСТ медь белый	4480.00	products/1366097-v01-m.jpg	3
+184	Кабель Falcon Eye ПВС 2x1.5мм2 50м ГОСТ медь белый	1420.00	products/1366091-v01-m.jpg	3
+185	Провод Falcon Eye ПВС 3x1.5мм2 20м ГОСТ медь белый	800.00	products/1366106-v01-m.jpg	3
+186	Кабель ЭлПроКабель NUM-O 2x1.5мм2 10м ГОСТ медь серый	360.00	products/1394082-v01-m.jpg	3
+187	Провод ЭлПроКабель ПВС 3x1.5мм2 20м ГОСТ медь белый	850.00	products/1394002-v01-m.jpg	3
+188	Провод Falcon Eye ПВС 3x2.5мм2 50м ГОСТ медь белый	3060.00	products/1366111-v01-m.jpg	3
+189	Кабель ЭлПроКабель ВВГП-НГ 2x2.5мм2 10м ГОСТ медь черный	450.00	products/1394056-v01-m.jpg	3
+190	Кабель ЭлПроКабель NUM-O 2x1.5мм2 50м ГОСТ медь серый	1720.00	products/1394040-v01-m.jpg	3
+191	Провод Falcon Eye ПВС 3x2.5мм2 100м ГОСТ медь белый	6100.00	products/1366112-v01-m.jpg	3
+192	Провод ЭлПроКабель ПВС 3x1.5мм2 10м ГОСТ медь белый	490.00	products/1394072-v01-m.jpg	3
+193	Провод ЭлПроКабель ПВС 3x2.5мм2 50м ГОСТ медь белый	3270.00	products/1394007-v01-m.jpg	3
+194	Кабель ЭлПроКабель NUM-O 2x2.5мм2 50м ГОСТ медь серый	2580.00	products/1394044-v01-m.jpg	3
+195	Провод ЭлПроКабель ПВС 2x2.5мм2 100м ГОСТ медь белый	4590.00	products/1393995-v01-m.jpg	3
+196	Кабель ЭлПроКабель NUM-J 3x2.5мм2 10м ГОСТ медь серый	720.00	products/1394085-v01-m.jpg	3
+197	Провод Falcon Eye ПВС 3x1.5мм2 50м ГОСТ медь белый	1970.00	products/1366108-v01-m.jpg	3
+198	Провод ЭлПроКабель ПВС 3x2.5мм2 10м ГОСТ медь белый	710.00	products/1394073-v01-m.jpg	3
+199	Кабель Rexant КГТП-ХЛ 1x50мм2 3м ГОСТ медь черный (01-8414-3)	1490.00	products/1385919-v01-m.jpg	3
+200	Провод Falcon Eye ПВС 3x2.5мм2 20м ГОСТ медь белый	1270.00	products/1366110-v01-m.jpg	3
+201	Провод ЭлПроКабель ПВС 3x0.75мм2 50м ГОСТ медь белый	1170.00	products/1393998-v01-m.jpg	3
+202	Кабель Falcon Eye ПВС 2x1.5мм2 100м ГОСТ медь белый	2840.00	products/1366092-v01-m.jpg	3
+203	Кабель ЭлПроКабель NUM-J 3x1.5мм2 10м ГОСТ медь серый	490.00	products/1394084-v01-m.jpg	3
+204	Провод Rexant ПВС 2x1.5мм2 50м ГОСТ медь белый (01-8035-50)	1790.00	products/1385855-v01-m.jpg	3
+205	Провод Rexant ПВС 2x2.5мм2 50м ГОСТ медь белый (01-8036-50)	2900.00	products/1385859-v01-m.jpg	3
+206	Провод Falcon Eye ПВС 3x0.75мм2 50м ГОСТ медь белый	1130.00	products/1366103-v01-m.jpg	3
+207	Провод Rexant ПВС 3x2.5мм2 50м ГОСТ медь белый (01-8048-50)	4080.00	products/1385871-v01-m.jpg	3
+208	Провод Rexant ПВС 3x0.75мм2 20м ГОСТ медь белый (01-8042-20)	600.00	products/1385861-v01-m.jpg	3
+209	Кабель Rexant КГТП-ХЛ 3x2.5мм2 50м ГОСТ медь черный (01-8421-50)	4080.00	products/1385932-v01-m.jpg	3
+210	Провод ЭлПроКабель ПВС 3x0.75мм2 100м ГОСТ медь белый	2300.00	products/1393999-v01-m.jpg	3
+211	Провод Rexant ПВС 3x1.5мм2 20м ГОСТ медь белый (01-8046-20)	1010.00	products/1385865-v01-m.jpg	3
+212	Провод Falcon Eye ПВС 3x0.75мм2 100м ГОСТ медь белый	2220.00	products/1366104-v01-m.jpg	3
 \.
 
 
@@ -882,7 +1072,7 @@ SELECT pg_catalog.setval('public.auth_group_permissions_id_seq', 1, false);
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.auth_permission_id_seq', 40, true);
+SELECT pg_catalog.setval('public.auth_permission_id_seq', 48, true);
 
 
 --
@@ -907,6 +1097,13 @@ SELECT pg_catalog.setval('public.auth_user_user_permissions_id_seq', 1, false);
 
 
 --
+-- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.categories_id_seq', 3, true);
+
+
+--
 -- Name: dating_message_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -917,21 +1114,21 @@ SELECT pg_catalog.setval('public.dating_message_id_seq', 18, true);
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.django_admin_log_id_seq', 110, true);
+SELECT pg_catalog.setval('public.django_admin_log_id_seq', 135, true);
 
 
 --
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.django_content_type_id_seq', 10, true);
+SELECT pg_catalog.setval('public.django_content_type_id_seq', 12, true);
 
 
 --
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.django_migrations_id_seq', 27, true);
+SELECT pg_catalog.setval('public.django_migrations_id_seq', 32, true);
 
 
 --
@@ -939,6 +1136,13 @@ SELECT pg_catalog.setval('public.django_migrations_id_seq', 27, true);
 --
 
 SELECT pg_catalog.setval('public.matches_id_seq', 18, true);
+
+
+--
+-- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.products_id_seq', 212, true);
 
 
 --
@@ -1045,6 +1249,14 @@ ALTER TABLE ONLY public.auth_user
 
 
 --
+-- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories
+    ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: dating_message dating_message_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1114,6 +1326,14 @@ ALTER TABLE ONLY public.matches
 
 ALTER TABLE ONLY public.matches
     ADD CONSTRAINT matches_to_id_id_key UNIQUE (to_id_id);
+
+
+--
+-- Name: products products_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.products
+    ADD CONSTRAINT products_pkey PRIMARY KEY (id);
 
 
 --
@@ -1196,6 +1416,13 @@ CREATE INDEX auth_user_username_6821ab7c_like ON public.auth_user USING btree (u
 
 
 --
+-- Name: categories_parent_id_fc02df82; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX categories_parent_id_fc02df82 ON public.categories USING btree (parent_id);
+
+
+--
 -- Name: django_admin_log_content_type_id_c4bce8eb; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1221,6 +1448,13 @@ CREATE INDEX django_session_expire_date_a5c62663 ON public.django_session USING 
 --
 
 CREATE INDEX django_session_session_key_c0390e0f_like ON public.django_session USING btree (session_key varchar_pattern_ops);
+
+
+--
+-- Name: products_category_id_a7a3a156; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX products_category_id_a7a3a156 ON public.products USING btree (category_id);
 
 
 --
@@ -1287,6 +1521,14 @@ ALTER TABLE ONLY public.auth_user_user_permissions
 
 
 --
+-- Name: categories categories_parent_id_fc02df82_fk_categories_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.categories
+    ADD CONSTRAINT categories_parent_id_fc02df82_fk_categories_id FOREIGN KEY (parent_id) REFERENCES public.categories(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: django_admin_log django_admin_log_content_type_id_c4bce8eb_fk_django_co; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1316,6 +1558,14 @@ ALTER TABLE ONLY public.matches
 
 ALTER TABLE ONLY public.matches
     ADD CONSTRAINT matches_to_id_id_b1c913a5_fk_users_id FOREIGN KEY (to_id_id) REFERENCES public.users(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: products products_category_id_a7a3a156_fk_categories_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.products
+    ADD CONSTRAINT products_category_id_a7a3a156_fk_categories_id FOREIGN KEY (category_id) REFERENCES public.categories(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --

@@ -9,7 +9,7 @@ from django.test import TestCase
 from base import settings
 from dating.models.Client import Client
 from dating.controllers.client import create, get_list
-from dating.utils.utils import get_upload_to
+from utils.utils import get_upload_to
 
 
 # Run TestClient from project root using unittests:

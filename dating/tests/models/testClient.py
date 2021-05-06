@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from base import settings
 from dating.models.Client import Client
-from dating.utils.utils import get_upload_to
+from utils.utils import get_upload_to
 
 # Run TestClient from project root using unittests:
 # python manage.py test dating.tests.models.testClient
@@ -58,7 +58,7 @@ class TestClient(TestCase):
         self.assertEqual(expected, actual)
 
     def test_image_tag(self):
-        """ Tests image_tag(self)."""
+        """Tests image_tag(self)."""
 
         expected = '<img src="'
         expected += self.data['avatar']['url']

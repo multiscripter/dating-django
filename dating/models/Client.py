@@ -3,8 +3,8 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from base import settings
-from dating.utils.utils import get_upload_to
-from dating.utils.utils import add_watermark_to_image
+from utils.utils import get_upload_to
+from utils.utils import add_watermark_to_image
 
 
 class Client(models.Model):

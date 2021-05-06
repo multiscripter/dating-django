@@ -10,7 +10,7 @@ from base import settings
 from dating.models.Client import Client
 from dating.services.ClientService import ClientService
 from dating.tests.DBDriver import DBDriver
-from dating.utils.utils import get_upload_to
+from utils.utils import get_upload_to
 
 
 # Run TestClient from project root using unittests:
