@@ -9,14 +9,14 @@ class Match(models.Model):
 
     __orig_mutual = None
 
-    from_id = models.OneToOneField(
+    from_id = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
         related_name='match_from',
         verbose_name='кто'
     )
 
-    to_id = models.OneToOneField(
+    to_id = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
         related_name='match_to',
@@ -62,15 +62,6 @@ class Match(models.Model):
                     client[0], client[1]
                 )
                 self.mailer.send('Совпадение', msg, client[1], [client[2]])
-
-    def to_dict(self):
-        d = {}
-        for field in self._meta.get_fields(include_hidden=True):
-            val = getattr(self, field.name, False)
-            if type(val).__name__ not in ['int', 'bool']:
-                val = val.__str__()
-            d[field.name] = val
-        return d
 
     def __str__(self):
         """Returns string representation."""

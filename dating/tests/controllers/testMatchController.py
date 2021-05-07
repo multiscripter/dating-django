@@ -3,10 +3,13 @@ from unittest.mock import patch
 
 from django.http import HttpRequest, QueryDict
 from django.test import TestCase
+from rest_framework import status
+from rest_framework.test import APIRequestFactory
 
 from dating.controllers.match import create
 from dating.models.Client import Client
 from dating.models.Match import Match
+from dating.models.MatchSerializer import MatchSerializer
 from dating.services.MatchService import MatchService
 
 
@@ -19,6 +22,7 @@ class TestMatchController(TestCase):
     def setUp(self):
         """Actions before each test."""
 
+        self.factory = APIRequestFactory()
         self.service = MatchService()
         self.data = []
         self.clients = []
@@ -40,6 +44,7 @@ class TestMatchController(TestCase):
 
         self.post_request = HttpRequest()
         self.post_request.method = 'POST'
+        self.post_data = {'id': self.clients[1].id}
         self.post_request.POST = QueryDict().copy()
         self.post_request.POST['id'] = self.clients[1].id
 
@@ -49,8 +54,11 @@ class TestMatchController(TestCase):
         Match successfully created.
         Returned HTTP status: 201 Created."""
 
-        response = create(self.post_request, self.clients[0].id)
-        self.assertEqual(201, response.status_code)
+        request = self.factory.post(
+            '/api/clients/create/', self.post_data
+        )
+        response = create(request, self.clients[0].id)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
         content = response.content.decode('utf-8')
         actual = json.loads(content)
@@ -58,7 +66,7 @@ class TestMatchController(TestCase):
             from_id=self.clients[0], to_id=self.clients[1]
         )[0]
         expected = {
-            'data': match.to_dict(),
+            'data': MatchSerializer(match).data,
             'errors': {},
             'is_created': True
         }
@@ -79,8 +87,11 @@ class TestMatchController(TestCase):
             'is_created': None
         }
 
-        response = create(self.post_request, self.clients[0].id)
-        self.assertEqual(400, response.status_code)
+        request = self.factory.post(
+            '/api/clients/create/', self.post_data
+        )
+        response = create(request, self.clients[0].id)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
         content = response.content.decode('utf-8')
         actual = json.loads(content)
@@ -92,9 +103,12 @@ class TestMatchController(TestCase):
         New Match did not create.
         Returned HTTP status: 304 Not Modified."""
 
-        self.post_request.POST['id'] = self.clients[3].id
-        response = create(self.post_request, self.clients[2].id)
-        self.assertEqual(304, response.status_code)
+        self.post_data['id'] = self.clients[3].id
+        request = self.factory.post(
+            '/api/clients/create/', self.post_data
+        )
+        response = create(request, self.clients[2].id)
+        self.assertEqual(status.HTTP_304_NOT_MODIFIED, response.status_code)
 
     def test_create_match_updates_success(self):
         """Tests create(request, from_id).
@@ -104,13 +118,16 @@ class TestMatchController(TestCase):
 
         self.match.is_mutually = True
         expected = {
-            'data': self.match.to_dict(),
+            'data': MatchSerializer(self.match).data,
             'errors': {}
         }
 
-        self.post_request.POST['id'] = self.clients[2].id
-        response = create(self.post_request, self.clients[3].id)
-        self.assertEqual(200, response.status_code)
+        self.post_data['id'] = self.clients[2].id
+        request = self.factory.post(
+            '/api/clients/create/', self.post_data
+        )
+        response = create(request, self.clients[3].id)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
 
         content = response.content.decode('utf-8')
         actual = json.loads(content)
@@ -130,9 +147,12 @@ class TestMatchController(TestCase):
             'errors': {'MatchService.update': error_message}
         }
 
-        self.post_request.POST['id'] = self.clients[2].id
-        response = create(self.post_request, self.clients[3].id)
-        self.assertEqual(400, response.status_code)
+        self.post_data['id'] = self.clients[2].id
+        request = self.factory.post(
+            '/api/clients/create/', self.post_data
+        )
+        response = create(request, self.clients[3].id)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
         content = response.content.decode('utf-8')
         actual = json.loads(content)
@@ -145,10 +165,13 @@ class TestMatchController(TestCase):
         Returned HTTP status: 304 Not Modified."""
 
         self.match.is_mutually = False
-        self.post_request.POST['id'] = self.clients[2].id
-        create(self.post_request, self.clients[3].id)
-        response = create(self.post_request, self.clients[3].id)
-        self.assertEqual(304, response.status_code)
+        self.post_data['id'] = self.clients[2].id
+        request = self.factory.post(
+            '/api/clients/create/', self.post_data
+        )
+        create(request, self.clients[3].id)
+        response = create(request, self.clients[3].id)
+        self.assertEqual(status.HTTP_304_NOT_MODIFIED, response.status_code)
 
     def test_create_error_method_not_allowed(self):
         """Tests create(request, from_id).
@@ -159,4 +182,4 @@ class TestMatchController(TestCase):
         request = HttpRequest()
         request.method = 'GET'
         response = create(request, 1)
-        self.assertEqual(405, response.status_code)
+        self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)

@@ -5,6 +5,7 @@ from django.test import TestCase
 
 from dating.models.Client import Client
 from dating.models.Match import Match
+from dating.models.MatchSerializer import MatchSerializer
 from dating.services.MatchService import MatchService
 
 
@@ -26,7 +27,8 @@ class TestMatchService(TestCase):
                 'first_name': f'Foo-{a}',
                 'last_name': f'Bar-{a}',
                 'email': f'foo-{a}@mail.ru',
-                'gender': Client.Gender.MALE.value,
+                'gender': Client.Gender.FEMALE.value if
+                a % 2 else Client.Gender.MALE.value,
                 'avatar': 'avatars/no-photo.png'
             })
             client = Client(**self.data[a])
@@ -56,6 +58,19 @@ class TestMatchService(TestCase):
         }
         self.assertEqual(expected, actual)
 
+    def test_create_many_matches_success(self):
+        """Tests create(self, params: Dict) -> Dict
+        One client has several matches.
+        Success."""
+
+        actual_1 = self.service.create(self.post_request, self.clients[0].id)
+        self.post_request.POST['id'] = self.clients[3].id
+        actual_2 = self.service.create(self.post_request, self.clients[0].id)
+        actual = [actual_1['data'], actual_2['data']]
+        expected = Match.objects.filter(from_id=self.clients[0])
+        expected = [e for e in expected]
+        self.assertEqual(expected, actual)
+
     @patch('django.db.models.query.QuerySet.get_or_create')
     def test_create_exception(self, mocked):
         """Tests create(self, params: Dict) -> Dict
@@ -77,12 +92,12 @@ class TestMatchService(TestCase):
         Success."""
 
         expected = {
-            'data': [self.match.to_dict()],
+            'data': [MatchSerializer(self.match).data],
             'errors': {}
         }
         self.post_request.POST['id'] = self.clients[2].id
         actual = self.service.read(self.post_request, self.clients[3].id)
-        actual['data'] = [m.to_dict() for m in actual['data']]
+        actual['data'] = [MatchSerializer(m).data for m in actual['data']]
         self.assertEqual(expected, actual)
 
     @patch('django.db.models.query.QuerySet.all')

@@ -5,6 +5,7 @@ from django.test import TestCase
 
 from base import settings
 from dating.models.Client import Client
+from dating.models.ClientSerializer import ClientSerializer
 from utils.utils import get_upload_to
 
 # Run TestClient from project root using unittests:
@@ -97,8 +98,8 @@ class TestClient(TestCase):
                         os.remove(path)
                 break
 
-    def test_to_dict(self):
-        """Tests to_dict(self)."""
+    def test_serialization(self):
+        """Tests class ClientSerializer."""
 
         expected = {
             'id': self.data['id'],
@@ -110,5 +111,5 @@ class TestClient(TestCase):
             'coord_x': None,
             'coord_y': None
         }
-        actual = self.client.to_dict()
+        actual = ClientSerializer(self.client).data
         self.assertEqual(expected, actual)

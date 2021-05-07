@@ -966,6 +966,7 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 30	products	0003_alter_product_name	2021-05-06 10:20:36.098423+03
 31	products	0004_alter_product_image	2021-05-06 10:37:19.850798+03
 32	products	0005_alter_product_image	2021-05-06 11:08:39.328761+03
+33	dating	0007_auto_20210507_1203	2021-05-07 15:03:59.847533+03
 \.
 
 
@@ -1128,7 +1129,7 @@ SELECT pg_catalog.setval('public.django_content_type_id_seq', 12, true);
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.django_migrations_id_seq', 32, true);
+SELECT pg_catalog.setval('public.django_migrations_id_seq', 33, true);
 
 
 --
@@ -1305,27 +1306,11 @@ ALTER TABLE ONLY public.django_session
 
 
 --
--- Name: matches matches_from_id_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.matches
-    ADD CONSTRAINT matches_from_id_id_key UNIQUE (from_id_id);
-
-
---
 -- Name: matches matches_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.matches
     ADD CONSTRAINT matches_pkey PRIMARY KEY (id);
-
-
---
--- Name: matches matches_to_id_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.matches
-    ADD CONSTRAINT matches_to_id_id_key UNIQUE (to_id_id);
 
 
 --
@@ -1448,6 +1433,20 @@ CREATE INDEX django_session_expire_date_a5c62663 ON public.django_session USING 
 --
 
 CREATE INDEX django_session_session_key_c0390e0f_like ON public.django_session USING btree (session_key varchar_pattern_ops);
+
+
+--
+-- Name: matches_from_id_id_c2f42b40; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX matches_from_id_id_c2f42b40 ON public.matches USING btree (from_id_id);
+
+
+--
+-- Name: matches_to_id_id_b1c913a5; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX matches_to_id_id_b1c913a5 ON public.matches USING btree (to_id_id);
 
 
 --

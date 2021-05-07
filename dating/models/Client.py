@@ -100,18 +100,6 @@ class Client(models.Model):
                 watermark
             )
 
-    def to_dict(self):
-        d = {}
-        for field in self._meta.get_fields(include_hidden=True):
-            val = getattr(self, field.name, False)
-            if val is not False:
-                if type(val).__name__ not in [
-                    'int', 'float', 'str', 'NoneType'
-                ]:
-                    val = val.__str__()
-                d[field.name] = val
-        return d
-
     def __str__(self):
         """Returns string representation."""
 

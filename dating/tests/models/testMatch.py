@@ -1,11 +1,13 @@
 from django.test import TestCase
 
 from dating.models.Client import Client
+from dating.models.ClientSerializer import ClientSerializer
 from dating.models.Match import Match
+from dating.models.MatchSerializer import MatchSerializer
+
 
 # Run TestClient from project root using unittests:
 # python manage.py test dating.tests.models.testMatch
-
 
 class TestMatch(TestCase):
     """Tests class Match."""
@@ -34,16 +36,16 @@ class TestMatch(TestCase):
         self.match = Match(**self.data)
         self.match.save()
 
-    def test_to_dict(self):
-        """Tests to_dict(self)."""
+    def test_serialization(self):
+        """Tests class MatchSerializer."""
 
         expected = {
             'id': self.match.id,
-            'from_id': self.data['from_id'].__str__(),
-            'to_id': self.data['to_id'].__str__(),
+            'from_id': ClientSerializer(self.data['from_id']).data,
+            'to_id': ClientSerializer(self.data['to_id']).data,
             'is_mutually': False
         }
-        actual = self.match.to_dict()
+        actual = MatchSerializer(self.match).data
         self.assertEqual(expected, actual)
 
     def test_str(self):
